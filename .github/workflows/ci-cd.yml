@@ -1,0 +1,88 @@
+name: Smart Attendance MLOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    
+      # CHECKOUT REPOSITORY
+      
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      
+      # SETUP PYTHON
+      
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      
+      # INSTALL DEPENDENCIES
+      
+
+      - name: Install Dependencies
+        run: |
+
+          python -m pip install --upgrade pip
+
+          pip install -r requirements.txt
+
+      
+      # VERIFY BACKEND IMPORTS
+      
+
+      - name: Test FastAPI Backend
+        run: |
+
+          python -c "import fastapi"
+
+          python -c "import uvicorn"
+
+      
+      # VERIFY FRONTEND IMPORTS
+      
+
+      - name: Test Streamlit Frontend
+        run: |
+
+          python -c "import streamlit"
+
+          python -c "import plotly"
+
+      # VERIFY ML LIBRARIES
+     
+
+      - name: Test ML Libraries
+        run: |
+
+          python -c "import mlflow"
+
+          python -c "import dvc"
+
+          python -c "import pandas"
+
+      
+      # SUCCESS MESSAGE
+      
+
+      - name: Pipeline Success
+        run: |
+
+          echo "CI/CD Pipeline Executed Successfully!"
