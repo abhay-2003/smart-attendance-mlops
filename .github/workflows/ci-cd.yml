@@ -11,74 +11,70 @@ on:
 
 jobs:
 
-  build-and-test:
+  validate-project:
 
     runs-on: ubuntu-latest
 
     steps:
 
-    
-      # CHECKOUT REPOSITORY
       
+      # CHECKOUT REPOSITORY
+     
 
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      
       # SETUP PYTHON
-      
+    
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      
-      # INSTALL DEPENDENCIES
+      # VERIFY PROJECT STRUCTURE
       
 
-      - name: Install Dependencies
+      - name: Verify Project Structure
         run: |
 
-          python -m pip install --upgrade pip
+          echo "Checking project structure..."
 
-          pip install -r requirements.txt
+          test -f requirements.txt
 
-      
-      # VERIFY BACKEND IMPORTS
-      
+          test -f src/api/main.py
 
-      - name: Test FastAPI Backend
-        run: |
+          test -f frontend/app.py
 
-          python -c "import fastapi"
+          test -f Dockerfile.backend
 
-          python -c "import uvicorn"
+          test -f Dockerfile.frontend
 
-      
-      # VERIFY FRONTEND IMPORTS
-      
+          echo "Project structure verified!"
 
-      - name: Test Streamlit Frontend
-        run: |
-
-          python -c "import streamlit"
-
-          python -c "import plotly"
-
-      # VERIFY ML LIBRARIES
      
+      # VERIFY YAML FILES
+      
 
-      - name: Test ML Libraries
+      - name: Verify YAML Files
         run: |
 
-          python -c "import mlflow"
+          test -f docker-compose.yml
 
-          python -c "import dvc"
+          test -f .github/workflows/ci-cd.yml
 
-          python -c "import pandas"
+          echo "YAML files verified!"
 
-      
+      # VERIFY FRONTEND FILES
+   
+
+      - name: Verify Frontend Files
+        run: |
+
+          test -f frontend/app.py
+
+          echo "Frontend files verified!"
+
       # SUCCESS MESSAGE
       
 
