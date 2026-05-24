@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: smart-attendance-backend
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+
+      containers:
+
+        - name: backend-container
+
+          image: smart-attendance-backend:latest
+
+          ports:
+            - containerPort: 8000
