@@ -23,27 +23,28 @@ from src.mlops.mlflow_manager import (
 MODEL_NAME = "Facenet"
 
 
-logger.info(
-    "Loading embeddings database..."
-)
-
-with open(
-    settings.EMBEDDINGS_PATH,
-    "rb"
-) as file:
-
-    embeddings_database = pickle.load(
-        file
-    )
-
-logger.info(
-    "Embeddings database loaded successfully"
-)
-
-
 def recognize_face(image_path: str):
 
     try:
+
+        # LOAD EMBEDDINGS DATABASE
+
+        logger.info(
+            "Loading embeddings database..."
+        )
+
+        with open(
+            settings.EMBEDDINGS_PATH,
+            "rb"
+        ) as file:
+
+            embeddings_database = pickle.load(
+                file
+            )
+
+        logger.info(
+            "Embeddings database loaded successfully"
+        )
 
         # START MLFLOW RUN
 
@@ -148,6 +149,7 @@ def recognize_face(image_path: str):
         # LOG MLFLOW METRICS
 
         log_recognition_metrics(
+
             similarity_score=
                 float(best_similarity_score),
 
