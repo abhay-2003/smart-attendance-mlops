@@ -6,7 +6,8 @@ metadata:
   name: smart-attendance-frontend
 
 spec:
-  replicas: 1
+
+  replicas: 2
 
   selector:
     matchLabels:
@@ -26,5 +27,17 @@ spec:
 
           image: smart-attendance-frontend:latest
 
+          imagePullPolicy: Never
+
           ports:
             - containerPort: 8501
+
+          resources:
+
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+
+            requests:
+              memory: "512Mi"
+              cpu: "250m"

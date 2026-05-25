@@ -1,101 +1,230 @@
 from deepface import DeepFace
 from sklearn.metrics.pairwise import cosine_similarity
+
 import numpy as np
 import pickle
 
-# CONFIGURATION
+from src.utils.logger import logger
+from src.config.settings import settings
 
+from src.services.attendance_service import (
+    mark_attendance
+)
 
-EMBEDDINGS_PATH = "data/embeddings/face_embeddings.pkl"
+from src.mlops.mlflow_manager import (
+    start_mlflow_run,
+    log_recognition_metrics,
+    log_recognition_params,
+    log_artifacts,
+    end_mlflow_run
+)
 
-TEST_IMAGE_PATH = "test.jpg"
 
 MODEL_NAME = "Facenet"
 
 
-# LOAD STORED EMBEDDINGS
-
-
-print("\nLoading embeddings database...")
-
-with open(EMBEDDINGS_PATH, "rb") as file:
-    embeddings_database = pickle.load(file)
-
-print("Embeddings loaded successfully!")
-
-
-# GENERATE EMBEDDING FOR TEST IMAGE
-
-
-print("\nGenerating embedding for test image...")
-
-test_embedding_result = DeepFace.represent(
-    img_path=TEST_IMAGE_PATH,
-    model_name=MODEL_NAME,
-    enforce_detection=False
+logger.info(
+    "Loading embeddings database..."
 )
 
-test_embedding = np.array(
-    test_embedding_result[0]["embedding"]
-).reshape(1, -1)
+with open(
+    settings.EMBEDDINGS_PATH,
+    "rb"
+) as file:
 
-print("Test embedding generated!")
+    embeddings_database = pickle.load(
+        file
+    )
 
-# FIND BEST MATCH
+logger.info(
+    "Embeddings database loaded successfully"
+)
 
 
-best_match_name = None
-best_similarity_score = -1
+def recognize_face(image_path: str):
 
-print("\nComparing with stored embeddings...\n")
+    try:
 
-for person_name, embeddings_list in embeddings_database.items():
+        # START MLFLOW RUN
 
-    for stored_embedding in embeddings_list:
+        start_mlflow_run(
+            "face_recognition_inference"
+        )
 
-        stored_embedding = np.array(
-            stored_embedding
+        # LOG PARAMETERS
+
+        log_recognition_params(
+            MODEL_NAME,
+            image_path
+        )
+
+        logger.info(
+            "Generating embedding for input image"
+        )
+
+        embedding_result = DeepFace.represent(
+            img_path=image_path,
+            model_name=MODEL_NAME,
+            enforce_detection=False
+        )
+
+        test_embedding = np.array(
+            embedding_result[0]["embedding"]
         ).reshape(1, -1)
 
-       
-        # CALCULATE COSINE SIMILARITY
-       
+        logger.info(
+            "Embedding generated successfully"
+        )
 
-        similarity = cosine_similarity(
-            test_embedding,
-            stored_embedding
-        )[0][0]
+        best_match_name = None
 
-       
-        # UPDATE BEST MATCH
-       
+        best_similarity_score = -1
 
-        if similarity > best_similarity_score:
+        logger.info(
+            "Comparing embeddings"
+        )
 
-            best_similarity_score = similarity
-            best_match_name = person_name
+        for person_name, embeddings_list in (
+            embeddings_database.items()
+        ):
 
-# FINAL RESULT
+            for stored_embedding in (
+                embeddings_list
+            ):
+
+                stored_embedding = np.array(
+                    stored_embedding
+                ).reshape(1, -1)
+
+                similarity = cosine_similarity(
+                    test_embedding,
+                    stored_embedding
+                )[0][0]
+
+                if similarity > (
+                    best_similarity_score
+                ):
+
+                    best_similarity_score = (
+                        similarity
+                    )
+
+                    best_match_name = (
+                        person_name
+                    )
+
+        logger.info(
+            "Face comparison completed"
+        )
+
+        confidence_percentage = round(
+            best_similarity_score * 100,
+            2
+        )
+
+        # THRESHOLD CHECK
+
+        if (
+            best_similarity_score
+            >= settings.SIMILARITY_THRESHOLD
+        ):
+
+            status = "MATCH FOUND"
+
+            mark_attendance(
+                best_match_name
+            )
+
+        else:
+
+            best_match_name = "Unknown"
+
+            status = "UNKNOWN PERSON"
+
+        logger.info(
+            f"Recognition Status: {status}"
+        )
+
+        # LOG MLFLOW METRICS
+
+        log_recognition_metrics(
+            similarity_score=
+                float(best_similarity_score),
+
+            threshold=
+                settings.SIMILARITY_THRESHOLD,
+
+            recognized=
+                (
+                    status
+                    ==
+                    "MATCH FOUND"
+                )
+        )
+
+        # LOG ARTIFACTS
+
+        log_artifacts()
+
+        # END MLFLOW RUN
+
+        end_mlflow_run()
+
+        return {
+
+            "predicted_person":
+                best_match_name,
+
+            "similarity_score":
+                round(
+                    float(
+                        best_similarity_score
+                    ),
+                    4
+                ),
+
+            "confidence_percentage":
+                confidence_percentage,
+
+            "status":
+                status
+        }
+
+    except Exception as error:
+
+        end_mlflow_run()
+
+        logger.error(
+            f"Recognition Error: {error}"
+        )
+
+        return {
+
+            "predicted_person":
+                None,
+
+            "similarity_score":
+                0.0,
+
+            "confidence_percentage":
+                0.0,
+
+            "status":
+                "ERROR",
+
+            "error":
+                str(error)
+        }
 
 
+if __name__ == "__main__":
 
-print("RECOGNITION RESULT")
+    result = recognize_face(
+        "test.jpg"
+    )
 
+    print(
+        "\nRECOGNITION RESULT\n"
+    )
 
-print(f"Predicted Person: {best_match_name}")
-
-print(f"Similarity Score: {best_similarity_score:.4f}")
-
-
-# THRESHOLD CHECK
-
-
-THRESHOLD = 0.70
-
-if best_similarity_score >= THRESHOLD:
-
-    print("\nMATCH FOUND!")
-
-else:
-
-    print("\nUNKNOWN PERSON!")
+    print(result)

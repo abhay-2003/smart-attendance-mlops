@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  generate_embeddings:
+    cmd: python -m src.training.embedding_generator
+    deps:
+    - path: data/raw/lfw-deepfunneled
+      hash: md5
+      md5: 795a6897f091be1cfed0e911abe4a8d4.dir
+      size: 1629046
+      nfiles: 186
+    - path: src/training/embedding_generator.py
+      hash: md5
+      md5: e866837e5e41b8630388ea06f7332ddb
+      size: 2269
+    outs:
+    - path: data/embeddings/face_embeddings.pkl
+      hash: md5
+      md5: 65b08a7378d5cf073fb7bcf600bc4f98
+      size: 217078

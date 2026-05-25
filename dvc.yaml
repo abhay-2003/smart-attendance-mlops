@@ -1,0 +1,12 @@
+stages:
+
+  generate_embeddings:
+
+    cmd: python -m src.training.embedding_generator
+
+    deps:
+      - src/training/embedding_generator.py
+      - data/raw/lfw-deepfunneled
+
+    outs:
+      - data/embeddings/face_embeddings.pkl
