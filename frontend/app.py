@@ -1,12 +1,27 @@
 import streamlit as st
 
-from components.sidebar import render_sidebar
+from frontend.components.sidebar import (
+    render_sidebar
+)
 
-from pages.dashboard import render_dashboard
-from pages.recognition import render_recognition_page
-from pages.attendance import render_attendance_page
-from pages.mlops import render_mlops_page
+from frontend.pages.dashboard import (
+    render_dashboard
+)
 
+from frontend.pages.recognition import (
+    render_recognition_page
+)
+
+from frontend.pages.attendance import (
+    render_attendance_page
+)
+
+from frontend.pages.mlops import (
+    render_mlops_page
+)
+
+
+# PAGE CONFIGURATION
 
 st.set_page_config(
     page_title="Smart Attendance AI Platform",
@@ -15,6 +30,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
+# GLOBAL STYLING
 
 st.markdown(
     """
@@ -58,14 +75,34 @@ st.markdown(
     }
 
     .stDataFrame {
-        background-color: rgba(15, 23, 42, 0.8);
+        background-color: rgba(
+            15,
+            23,
+            42,
+            0.8
+        );
+
         border-radius: 12px;
     }
 
     div[data-testid="metric-container"] {
-        background-color: rgba(15, 23, 42, 0.7);
-        border: 1px solid rgba(59, 130, 246, 0.2);
+
+        background-color: rgba(
+            15,
+            23,
+            42,
+            0.7
+        );
+
+        border: 1px solid rgba(
+            59,
+            130,
+            246,
+            0.2
+        );
+
         padding: 20px;
+
         border-radius: 16px;
     }
 
@@ -75,8 +112,12 @@ st.markdown(
 )
 
 
+# SIDEBAR NAVIGATION
+
 selected_page = render_sidebar()
 
+
+# PAGE ROUTING
 
 if selected_page == "Dashboard":
 
