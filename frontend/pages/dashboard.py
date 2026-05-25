@@ -2,19 +2,28 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from components.cards import render_metric_card
-from utils.api_client import check_api_health
+from frontend.components.cards import (
+    render_metric_card
+)
+
+from frontend.utils.api_client import (
+    check_api_health
+)
 
 
 def render_dashboard():
 
-    st.title("🤖 Smart Attendance AI Platform")
+    st.title(
+        "🤖 Smart Attendance AI Platform"
+    )
 
     st.caption(
         "Enterprise MLOps Face Recognition System"
     )
 
     st.write("")
+
+    # BACKEND HEALTH CHECK
 
     try:
 
@@ -32,46 +41,53 @@ def render_dashboard():
 
     st.write("")
 
+    # METRIC CARDS
+
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
 
         render_metric_card(
-            "Dataset Size",
-            "100",
-            "🧠"
+            title="Dataset Size",
+            value="100",
+            icon="🧠"
         )
 
     with col2:
 
         render_metric_card(
-            "Recognition Model",
-            "FaceNet",
-            "🤖"
+            title="Recognition Model",
+            value="FaceNet",
+            icon="🤖"
         )
 
     with col3:
 
         render_metric_card(
-            "Pipeline Status",
-            "Active",
-            "⚡"
+            title="Pipeline Status",
+            value="Active",
+            icon="⚡"
         )
 
     with col4:
 
         render_metric_card(
-            "Backend API",
-            "Online",
-            "🟢"
+            title="Backend API",
+            value="Online",
+            icon="🟢"
         )
 
     st.write("")
     st.write("")
 
-    st.subheader("⚙️ MLOps Workflow Pipeline")
+    # MLOPS PIPELINE
+
+    st.subheader(
+        "⚙️ MLOps Workflow Pipeline"
+    )
 
     workflow_steps = [
+
         "Dataset",
         "DVC",
         "Embeddings",
@@ -97,10 +113,16 @@ def render_dashboard():
     st.write("")
     st.write("")
 
-    st.subheader("📈 Attendance Analytics")
+    # ANALYTICS SECTION
+
+    st.subheader(
+        "📈 Attendance Analytics"
+    )
 
     analytics_data = pd.DataFrame({
+
         "Day": [
+
             "Mon",
             "Tue",
             "Wed",
@@ -109,6 +131,7 @@ def render_dashboard():
         ],
 
         "Attendance": [
+
             78,
             85,
             90,
@@ -118,17 +141,30 @@ def render_dashboard():
     })
 
     fig = px.area(
+
         analytics_data,
+
         x="Day",
+
         y="Attendance",
+
         markers=True
     )
 
     fig.update_layout(
-        height=500
+
+        height=500,
+
+        template="plotly_dark",
+
+        paper_bgcolor="rgba(0,0,0,0)",
+
+        plot_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
+
         fig,
+
         use_container_width=True
     )
