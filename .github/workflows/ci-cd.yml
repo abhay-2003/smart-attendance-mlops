@@ -19,6 +19,16 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+
+      PROJECT_NAME: "Smart Attendance MLOps"
+
+      SIMILARITY_THRESHOLD: "0.70"
+
+      EMBEDDINGS_PATH: "data/embeddings/face_embeddings.pkl"
+
+      MLFLOW_TRACKING_URI: "http://127.0.0.1:5000"
+
     steps:
 
       # CHECKOUT REPOSITORY
@@ -108,7 +118,7 @@ jobs:
 
         run: |
 
-          python -c "from src.mlops.mlflow_manager import start_mlflow_run; print('MLflow working')"
+          python -c 'from src.mlops.mlflow_manager import start_mlflow_run; print("MLflow working")'
 
       # VERIFY DVC PIPELINE
 
