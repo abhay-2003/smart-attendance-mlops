@@ -1,22 +1,22 @@
 import streamlit as st
 
-from frontend.components.sidebar import (
+from components.sidebar import (
     render_sidebar
 )
 
-from frontend.pages.dashboard import (
+from pages.dashboard import (
     render_dashboard
 )
 
-from frontend.pages.recognition import (
+from pages.recognition import (
     render_recognition_page
 )
 
-from frontend.pages.attendance import (
+from pages.attendance import (
     render_attendance_page
 )
 
-from frontend.pages.mlops import (
+from pages.mlops import (
     render_mlops_page
 )
 

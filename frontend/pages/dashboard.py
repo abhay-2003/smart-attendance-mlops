@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from frontend.components.cards import (
+from components.cards import (
     render_metric_card
 )
 
-from frontend.utils.api_client import (
+from utils.api_client import (
     check_api_health
 )
 

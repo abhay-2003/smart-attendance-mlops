@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-python@v5
 
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       # INSTALL DEPENDENCIES
 
@@ -67,6 +67,8 @@ jobs:
           test -f src/api/main.py
 
           test -f frontend/app.py
+
+          test -f frontend/__init__.py
 
           test -f Dockerfile.backend
 
@@ -118,7 +120,7 @@ jobs:
 
         run: |
 
-          python -c 'from src.mlops.mlflow_manager import start_mlflow_run; print("MLflow working")'
+          python -c "from src.mlops.mlflow_manager import start_mlflow_run; print('MLflow working')"
 
       # VERIFY DVC PIPELINE
 
@@ -128,13 +130,25 @@ jobs:
 
           dvc status
 
-      # VERIFY FRONTEND
+      # VERIFY FRONTEND STRUCTURE
 
-      - name: Verify Frontend
+      - name: Verify Frontend Structure
 
         run: |
 
-          python -c "from frontend.app import *; print('Frontend working')"
+          test -f frontend/app.py
+
+          test -f frontend/pages/dashboard.py
+
+          test -f frontend/pages/recognition.py
+
+          test -f frontend/pages/attendance.py
+
+          test -f frontend/pages/mlops.py
+
+          test -f frontend/components/sidebar.py
+
+          echo "Frontend structure verified!"
 
       # SUCCESS MESSAGE
 
